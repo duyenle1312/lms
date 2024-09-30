@@ -1,5 +1,5 @@
 import { getCourses } from "@/app/search/page";
-const { removeStopwords } = require("stopword");
+import { removeStopwords } from "stopword";
 
 export const getRecommendation = async (id: string) => {
   //   console.log(id);
@@ -26,8 +26,8 @@ export const getRecommendation = async (id: string) => {
   };
 
   const countWordFrequency = (text: string) => {
-    let frequency: { [key: string]: number } = {};
-    let tokens = tokenize(text);
+    const frequency: { [key: string]: number } = {};
+    const tokens = tokenize(text);
     //console.log(tokens);
     tokens.forEach((i) => (frequency[i] = (frequency[i] || 0) + 1));
     //console.log(frequency);
@@ -58,30 +58,30 @@ export const getRecommendation = async (id: string) => {
       sum_x += x[i] ** 2;
       sum_y += y[i] ** 2;
     }
-    let result = product / (Math.sqrt(sum_x) * Math.sqrt(sum_y));
+    const result = product / (Math.sqrt(sum_x) * Math.sqrt(sum_y));
     return result * 100;
   };
 
-  let recommendation = [];
+  const recommendation = [];
   // find course similarity
   for (let i = 0; i < potential_courses.length; i++) {
     // Tokenization
-    let course_info =
+    const course_info =
       course?.course_title +
       " " +
       course?.what_you_will_learn +
       " " +
       course?.skill_gain;
-    let courseWordCount = countWordFrequency(course_info || "");
+    const courseWordCount = countWordFrequency(course_info || "");
     // console.log(courseWordCount);
 
-    let target_info =
+    const target_info =
       potential_courses[i].course_title +
       " " +
       potential_courses[i].what_you_will_learn +
       " " +
       potential_courses[i].skill_gain;
-    let targetWordCount = countWordFrequency(target_info || "");
+    const targetWordCount = countWordFrequency(target_info || "");
     // console.log(targetWordCount);
 
     const mergedText = course_info + " " + target_info;
