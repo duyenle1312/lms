@@ -1,0 +1,39 @@
+/course/.env
+.vscode
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/course/node_modules
+/course/.pnp
+/course.pnp.js
+/course.yarn/install-state.gz
+
+# testing
+/course/coverage
+
+# next.js
+/course/.next/
+/course/out/
+
+# production
+/course/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+/course/npm-debug.log*
+/course/yarn-debug.log*
+/course/yarn-error.log*
+
+# local env files
+/course/.env*.local
+
+# vercel
+/course/.vercel
+
+# typescript
+/course/*.tsbuildinfo
+/course/next-env.d.ts

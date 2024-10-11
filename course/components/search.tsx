@@ -42,10 +42,11 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
+  // SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useRouter } from "next/navigation";
 
 export type CourseObject = {
   id: number;
@@ -74,6 +75,16 @@ export default function SearchTable({
   title,
   pageSize = 10,
 }: CourseListProps) {
+  const router = useRouter();
+
+  if (title !== "Recommendation") {
+    if (typeof window !== "undefined" && window.localStorage) {
+      const user = localStorage.getItem("user");
+      if (!user) router.push("/login"); // Navigate to login page
+      console.log("From Local: ", user);
+    }
+  }
+
   // console.log("data ", data);
 
   const columns: ColumnDef<CourseObject>[] = [
