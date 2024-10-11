@@ -1,4 +1,4 @@
-import { getCourses } from "@/app/search/page";
+import { getCourses } from "@/app/(dashboard)/search/page";
 import SearchTable from "@/components/search";
 import { Button } from "@/components/ui/button";
 import { getRecommendation } from "@/lib/getRmd";

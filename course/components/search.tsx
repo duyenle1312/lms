@@ -37,6 +37,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 export type CourseObject = {
   id: number;
   course_title: string;
@@ -79,7 +89,7 @@ export default function SearchTable({
           <Button
             variant="ghost"
             className="font-bold text-black -ml-1"
-              onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
           >
             {title}
             <ArrowUpDown className="ml-2 h-4 w-4" />
@@ -95,10 +105,21 @@ export default function SearchTable({
               <p className="text-xs mt-2">Course ID: {row.getValue("id")}</p>
             )}
             <div className="my-2">
-              <p>{row.getValue("what_you_will_learn")}</p>
+              <p>
+                {/* <span className="font-semibold">Division:</span>{" "} */}
+                {row.getValue("keyword")}
+              </p>
             </div>
 
-            <p>Instructor: {row.getValue("instructor")}</p>
+            <div className="my-2">
+              <p>
+                <span className="font-semibold">Instructor:</span>{" "}
+                {row.getValue("instructor")}
+              </p>
+            </div>
+            <div className="my-2">
+              <p>{row.getValue("what_you_will_learn")}</p>
+            </div>
           </a>
         </div>
       ),
@@ -108,7 +129,22 @@ export default function SearchTable({
       header: "what_you_will_learn",
       cell: ({ row }) => <div>{row.getValue("what_you_will_learn")}</div>,
     },
-
+    {
+      accessorKey: "keyword",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            className="font-bold text-black -ml-1"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Department
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        );
+      },
+      cell: ({ row }) => <div>{row.getValue("keyword")}</div>,
+    },
     {
       accessorKey: "instructor",
       header: ({ column }) => {
@@ -135,6 +171,7 @@ export default function SearchTable({
       id: false,
       instructor: false,
       what_you_will_learn: false,
+      keyword: false,
     });
   const [rowSelection, setRowSelection] = React.useState({});
   const [pagination, setPagination] = React.useState<PaginationState>({
@@ -167,19 +204,56 @@ export default function SearchTable({
     <div className="w-full">
       <div className="flex items-center py-4">
         {title !== "Recommendation" && (
-          <Input
-            placeholder="Search course..."
-            value={
-              (table.getColumn("course_title")?.getFilterValue() as string) ??
-              ""
-            }
-            onChange={(event) =>
-              table
-                .getColumn("course_title")
-                ?.setFilterValue(event.target.value)
-            }
-            className="max-w-sm"
-          />
+          <div className="flex flex-row w-full space-x-3">
+            <Input
+              placeholder="Search course"
+              value={
+                (table.getColumn("course_title")?.getFilterValue() as string) ??
+                ""
+              }
+              onChange={(event) =>
+                table
+                  .getColumn("course_title")
+                  ?.setFilterValue(event.target.value)
+              }
+              className="max-w-sm"
+            />
+            <Select
+              onValueChange={(value) =>
+                table.getColumn("keyword")?.setFilterValue(value)
+              }
+            >
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select department" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {/* <SelectLabel>Fruits</SelectLabel> */}
+                  <SelectItem value="Arts and Humanities">
+                    Arts and Humanities
+                  </SelectItem>
+                  <SelectItem value="Business">Business</SelectItem>
+                  <SelectItem value="Computer Science">
+                    Computer Science
+                  </SelectItem>
+                  <SelectItem value="Data Science">Data Science</SelectItem>
+                  <SelectItem value="Information Technology">
+                    Information Technology
+                  </SelectItem>
+                  <SelectItem value="Math and Logic">Math and Logic</SelectItem>
+                  <SelectItem value="Personal Development">
+                    Personal Development
+                  </SelectItem>
+                  <SelectItem value="Physical Science and Engineering">
+                    Physical Science and Engineering
+                  </SelectItem>
+                  <SelectItem value="Social Sciences">
+                    Social Sciences
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
         )}
         {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -324,12 +398,11 @@ export default function SearchTable({
             </select>
           )}
         </div>
-        
-          <div>
-            {/* Showing {table.getRowModel().rows.length.toLocaleString()} of{' '} */}
-            of {table.getRowCount().toLocaleString()} Results
-          </div>
-        
+
+        <div>
+          {/* Showing {table.getRowModel().rows.length.toLocaleString()} of{' '} */}
+          of {table.getRowCount().toLocaleString()} Results
+        </div>
       </div>
     </div>
   );

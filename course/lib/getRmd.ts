@@ -1,4 +1,4 @@
-import { getCourses } from "@/app/search/page";
+import { getCourses } from "@/app/(dashboard)/search/page";
 import { removeStopwords } from "stopword";
 
 export const getRecommendation = async (id: string) => {
