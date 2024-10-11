@@ -1,5 +1,7 @@
 /course/.env
 .vscode
+/venv
+.DS_Store
 
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
@@ -37,3 +39,4 @@
 # typescript
 /course/*.tsbuildinfo
 /course/next-env.d.ts
+.DS_Store

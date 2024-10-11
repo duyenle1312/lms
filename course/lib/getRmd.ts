@@ -1,18 +1,18 @@
 import { getCourses } from "@/app/(dashboard)/search/page";
 import { removeStopwords } from "stopword";
 
+export const getRecommendationForUser = (user_id: string) => {
+  console.log(user_id)
+  
+  return
+}
+
 export const getRecommendation = async (id: string) => {
-  //   console.log(id);
-
   const courses = await getCourses();
-
-  // Finding courses in the same department
   const course = courses.find((i) => i.id.toString() === id);
-  //   const course_department = course?.keyword;
   const potential_courses = courses.filter(
     (i) => i.id.toString() !== id // i.keyword === course_department &&
   );
-
 
   const tokenize = (text: string) => {
     let tokens = text
@@ -102,6 +102,5 @@ export const getRecommendation = async (id: string) => {
       recommendation.push(potential_courses[i]);
     }
   }
-  //   console.log("Rec: ", recommendation.length);
   return recommendation;
 };

@@ -22,7 +22,7 @@ export default function SignUp() {
   const [lastName, setLastName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  
+
   const handleSubmit = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     path: string
@@ -39,7 +39,7 @@ export default function SignUp() {
     if (response.ok) {
     //   console.log("Response: ", result);
       localStorage.setItem("user", JSON.stringify(result.user));
-      router.push("/search"); // Navigate to the search page
+      router.push("/welcome"); // Navigate to the welcome page
     } else {
       setErrorMessage(`Error: ${result.message}`);
       console.log(`${path} failed`);

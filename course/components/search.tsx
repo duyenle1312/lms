@@ -81,7 +81,6 @@ export default function SearchTable({
     if (typeof window !== "undefined" && window.localStorage) {
       const user = localStorage.getItem("user");
       if (!user) router.push("/login"); // Navigate to login page
-      console.log("From Local: ", user);
     }
   }
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   CardContent,
@@ -12,39 +12,31 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { X } from "lucide-react";
-
-// Predefined list of keywords/topics
-const allKeywords = [
-  "Web Development",
-  "Data Science",
-  "Machine Learning",
-  "Mobile App Development",
-  "Artificial Intelligence",
-  "Cloud Computing",
-  "Cybersecurity",
-  "DevOps",
-  "Blockchain",
-  "Internet of Things",
-  "UI/UX Design",
-  "Digital Marketing",
-  "Business Analytics",
-  "Project Management",
-  "Graphic Design",
-  "Game Development",
-  "Network Administration",
-  "Database Management",
-  "Software Testing",
-  "Agile Methodologies",
-  "Arts and Humanities",
-  "Criminology",
-  "History",
-  "Religion",
-  "Ethics",
-  "Law",
-];
+import { useRouter } from "next/navigation";
 
 export default function Welcome() {
+  const router = useRouter();
   const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
+  const [allKeywords, setAllKeywords] = useState<string[]>([]);
+  const [isLoading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/keyword")
+      .then((res) => res.json())
+      .then((data) => {
+        setAllKeywords(data.keywords);
+        setLoading(false);
+      });
+  }, []);
+
+  if (isLoading)
+    return (
+      <div className="flex justify-center p-12">
+        <p>Loading...</p>
+      </div>
+    );
+  if (!allKeywords) return <p>No keywords found</p>;
 
   const handleKeywordClick = (keyword: string) => {
     if (selectedKeywords.includes(keyword)) {
@@ -60,9 +52,27 @@ export default function Welcome() {
     setSelectedKeywords(selectedKeywords.filter((k) => k !== keyword));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    setSubmitting(true);
     console.log("Submitted keywords:", selectedKeywords);
-    // Here you would typically send this data to your backend
+    const user = JSON.parse(localStorage.getItem("user") || "");
+
+    if (user) {
+      const response = await fetch(`/api/keyword`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: user.user_id,
+          keywords: JSON.stringify(selectedKeywords),
+        }),
+      });
+      const result = await response.json();
+      console.log(result);
+
+      if (response.status == 201) {
+        router.push("/"); // Navigate to the home page
+      }
+    }
   };
 
   return (
@@ -82,7 +92,7 @@ export default function Welcome() {
               <h3 className="text-lg font-semibold mb-2">Available Topics</h3>
               <ScrollArea className="h-[500px] w-full rounded-md border p-4">
                 <div className="grid md:grid-cols-3 gap-2">
-                  {allKeywords.sort().map((keyword) => (
+                  {allKeywords?.sort().map((keyword) => (
                     <Badge
                       key={keyword}
                       variant={
@@ -141,9 +151,12 @@ export default function Welcome() {
           </p>
           <Button
             onClick={handleSubmit}
-            disabled={selectedKeywords.length < 10}
+            disabled={selectedKeywords.length < 1}
+            className={`font-bold ${
+              submitting && "bg-blue-500 hover:bg-blue-500 "
+            }`}
           >
-            Submit Preferences
+            {submitting ? "Submitting..." : "Submit Preferences"}
           </Button>
         </CardFooter>
       </div>

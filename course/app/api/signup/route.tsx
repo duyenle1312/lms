@@ -1,4 +1,4 @@
-import pool from "../../../utils/db";
+import pool from "../../../lib/db";
 import { genSaltSync, hashSync } from "bcrypt-ts";
 import { NextResponse } from "next/server";
 
