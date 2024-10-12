@@ -20,17 +20,23 @@ export type Course = {
   duration_to_complete: string;
 };
 
-export const getRecommendationForUser = async (user_id: string) => {
+export const findUserInterests = async (user_id: string) => {
   console.log("User ID: ", user_id);
 
   // get user_interest
-  let user_interests = await pool.query(
+  const user_interests = await pool.query(
     "SELECT u.user_id, k.keyword_name, ui.ranking FROM users u inner join user_interests ui \
     on u.user_id = ui.user_id inner join keywords k on k.keyword_id = ui.keyword_id \
-    where u.user_id = $1;",
+    where u.user_id = $1 order by ui.ranking desc;",
     [user_id]
   );
+  return user_interests.rows;
+};
 
+export const getRecommendationForUser = async (user_id: string) => {
+  const user_interests = await findUserInterests(user_id);
+
+  // get course keyword
   const file_name = "course_keyword.csv";
   const file = await fs.readFile(process.cwd() + `/app/${file_name}`, "utf8");
 
@@ -48,7 +54,7 @@ export const getRecommendationForUser = async (user_id: string) => {
   const user_matrix: number[] = [];
 
   all_keywords.forEach((row) => {
-    const value = user_interests.rows.find(
+    const value = user_interests.find(
       (i: { keyword_name: string }) => i.keyword_name === row
     );
     if (value) {
@@ -81,7 +87,7 @@ export const getRecommendationForUser = async (user_id: string) => {
     .sort((a, b) => b.value - a.value)
     .slice(0, 10);
 
-  const recommendation: { id: string, title: string }[] = [];
+  const recommendation: { id: string; title: string }[] = [];
   indexes.forEach((i) => {
     const course_id = data.slice(1)[i.index].split("\t")[0];
     const course_title = data.slice(1)[i.index].split("\t")[1];

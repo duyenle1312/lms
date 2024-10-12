@@ -12,13 +12,13 @@ const Navigation = () => {
         Search
       </a>
       <a href="/welcome" className="font-bold text-blue-800">
-        Keywords
+        Topics
       </a>
       </div>
       
       <div className="flex justify-center align-middle items-center">
         <a href="/login" className="font-bold text-blue-800">
-          <Button className="font-bold bg-blue-600">Sign In</Button>
+          <Button className="font-bold text-xs">Log Out</Button>
         </a>
       </div>
     </div>
