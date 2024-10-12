@@ -2,7 +2,6 @@ import { getCourses } from "@/app/(dashboard)/search/page";
 import { removeStopwords } from "stopword";
 import { promises as fs } from "fs";
 import pool from "./db";
-import { getKeywords } from "@/app/api/keyword/route";
 
 export type Course = {
   id: number;
@@ -212,8 +211,8 @@ export const populateCourseData = async () => {
   return new_data;
 };
 
-export const getRecommendation = async (id: string) => {
-  const courses = await getCourses("course_data.csv");
+export const getRecommendationForCourse = async (id: string) => {
+  const courses = await getCourses();
   const course = courses.find((i) => i.id.toString() === id);
   const potential_courses = courses.filter(
     (i) => i.id.toString() !== id // i.keyword === course_department &&

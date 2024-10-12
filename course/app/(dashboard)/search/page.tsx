@@ -1,6 +1,6 @@
 import SearchTable from "@/components/search";
 import React from "react";
-import { promises as fs } from "fs";
+import pool from "@/lib/db";
 
 export type CourseObject = {
   id: number;
@@ -16,66 +16,38 @@ export type CourseObject = {
   department: string;
   course_url: string;
   duration_to_complete: string;
-}
+};
 
-export const getCourses = async (file_name: string) => {
-  const file = await fs.readFile(
-    process.cwd() + `/app/${file_name}`,
-    "utf8"
-  );
-
-  let data = file.split("\t"); // get string data from csv file
-
-  // split data point
-  for (let i = 0; i < data.length; i++) {
-    data[i] = data[i].trim().replace('"', "");
-  }
-  data = data.filter(function (i) {
-    return i != "";
-  });
-
-  const titles = data.slice(0, 12);
-  // Change header to snake_case
-  for (let i = 0; i < titles.length; i++) {
-    titles[i] = titles[i].toLowerCase().split(" ").join("_");
-    if (titles[i] === "duration_to_complete_(approx.)")
-      titles[i] = "duration_to_complete";
-  }
-  // console.log(titles);
-
-  // Remove title from data
-  data.splice(0, 12);
+export const getCourses = async () => {
+  const courses = await pool.query("SELECT * FROM courses;");
 
   // Assign data into data object
   const new_data: CourseObject[] = [];
-  let index = 0;
 
-  for (let i = 0; i < data.length - 1; i += 12) {
+  for (let i = 0; i < courses.rows.length; i++) {
     const clean_data: CourseObject = {
-      id: index,
-      course_title: data[i].split("\n")[1],
-      rating: data[i + 1],
-      level: data[i + 2],
-      schedule: data[i + 3],
-      what_you_will_learn: data[i + 4],
-      skill_gain: data[i + 5],
-      modules: data[i + 6],
-      instructor: data[i + 7],
-      offered_by: data[i + 8],
-      department: data[i + 9],
-      course_url: data[i + 10],
-      duration_to_complete: data[i + 11],
+      id: courses.rows[i].course_id,
+      course_title: courses.rows[i].course_title,
+      rating: courses.rows[i].rating,
+      level: courses.rows[i].level,
+      schedule: courses.rows[i].schedule,
+      what_you_will_learn: courses.rows[i].description,
+      skill_gain: courses.rows[i].skill_gain,
+      modules: courses.rows[i].modules,
+      instructor: courses.rows[i].instructor,
+      offered_by: courses.rows[i].offered_by,
+      department: courses.rows[i].department,
+      course_url: courses.rows[i].course_url,
+      duration_to_complete: courses.rows[i].duration,
     };
     new_data.push(clean_data);
-    index++;
   }
 
-  //   console.log(new_data.length)
   return new_data;
 };
 
 const Search = async () => {
-  const data = await getCourses("course_data.csv");
+  const data = await getCourses();
 
   return (
     <div className="w-full md:px-16 px-6 py-2">

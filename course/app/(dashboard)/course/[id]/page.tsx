@@ -1,13 +1,13 @@
 import { getCourses } from "@/app/(dashboard)/search/page";
 import SearchTable from "@/components/search";
 import { Button } from "@/components/ui/button";
-import { getRecommendation } from "@/lib/getRmd";
+import { getRecommendationForCourse } from "@/lib/getRmd";
 
 export default async function Course({ params }: { params: { id: string } }) {
-  const data = await getCourses("course_data.csv");
+  const data = await getCourses();
   const course = data.find((i) => i.id.toString() === params.id);
 
-  const rmdCourses = await getRecommendation(params.id);
+  const rmdCourses = await getRecommendationForCourse(params.id);
 
   return (
     <div className="w-full flex md:flex-row flex-col">
@@ -50,7 +50,7 @@ export default async function Course({ params }: { params: { id: string } }) {
           </Button>
           {/* <Button
             className="bg-orange-500 text-white font-bold mt-5"
-            onClick={getRecommendation}
+            onClick={getRecommendationForCourse}
           >
             Show Recommendation
           </Button> */}
