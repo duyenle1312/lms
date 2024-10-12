@@ -35,7 +35,7 @@ export default function SignIn() {
       if (response.status === 200) {
         // console.log("Response: ", result);
         localStorage.setItem("user", JSON.stringify(result.user));
-        router.push("/search"); // Navigate to the search page
+        router.push("/"); // Navigate to the search page
       }
     } else {
       setErrorMessage(`Error: ${result.message}`);
