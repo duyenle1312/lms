@@ -2,7 +2,7 @@ import SearchTable from "@/components/search";
 import React from "react";
 import { promises as fs } from "fs";
 
-interface CourseObject {
+export type CourseObject = {
   id: number;
   course_title: string;
   rating: string;
@@ -13,14 +13,14 @@ interface CourseObject {
   modules: string;
   instructor: string;
   offered_by: string;
-  keyword: string;
+  department: string;
   course_url: string;
   duration_to_complete: string;
 }
 
-export const getCourses = async () => {
+export const getCourses = async (file_name: string) => {
   const file = await fs.readFile(
-    process.cwd() + "/app/course_data.csv",
+    process.cwd() + `/app/${file_name}`,
     "utf8"
   );
 
@@ -62,7 +62,7 @@ export const getCourses = async () => {
       modules: data[i + 6],
       instructor: data[i + 7],
       offered_by: data[i + 8],
-      keyword: data[i + 9],
+      department: data[i + 9],
       course_url: data[i + 10],
       duration_to_complete: data[i + 11],
     };
@@ -75,7 +75,7 @@ export const getCourses = async () => {
 };
 
 const Search = async () => {
-  const data = await getCourses();
+  const data = await getCourses("course_data.csv");
 
   return (
     <div className="w-full md:px-16 px-6 py-2">

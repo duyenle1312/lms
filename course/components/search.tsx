@@ -47,22 +47,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
-
-export type CourseObject = {
-  id: number;
-  course_title: string;
-  rating: string;
-  level: string;
-  schedule: string;
-  what_you_will_learn: string;
-  skill_gain: string;
-  modules: string;
-  instructor: string;
-  offered_by: string;
-  keyword: string;
-  course_url: string;
-  duration_to_complete: string;
-};
+import { CourseObject } from "@/app/(dashboard)/search/page";
 
 export interface CourseListProps {
   data: CourseObject[];

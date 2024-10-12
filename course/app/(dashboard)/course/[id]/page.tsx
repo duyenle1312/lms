@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { getRecommendation } from "@/lib/getRmd";
 
 export default async function Course({ params }: { params: { id: string } }) {
-  const data = await getCourses();
+  const data = await getCourses("course_data.csv");
   const course = data.find((i) => i.id.toString() === params.id);
 
   const rmdCourses = await getRecommendation(params.id);

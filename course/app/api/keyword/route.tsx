@@ -1,14 +1,14 @@
 import pool from "../../../lib/db";
 import { NextResponse } from "next/server";
 
-type Record = {
+export type KeywordType = {
   [keyword_name: string]: string;
 };
 
 export const getKeywords = async () => {
   const result = await pool.query("SELECT keyword_name FROM keywords");
   const data: string[] = [];
-  result.rows.forEach((r: Record) => data.push(r.keyword_name));
+  result.rows.forEach((r: KeywordType) => data.push(r.keyword_name));
   return data;
 };
 
