@@ -47,7 +47,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
-import { CourseObject } from "@/app/(dashboard)/search/page";
+import { CourseObject } from "@/lib/getRmd";
+
 
 export interface CourseListProps {
   data: CourseObject[];

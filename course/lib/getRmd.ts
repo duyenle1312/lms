@@ -1,4 +1,3 @@
-import { getCourses } from "@/app/(dashboard)/search/page";
 import { removeStopwords } from "stopword";
 import { promises as fs } from "fs";
 import pool from "./db";
@@ -18,6 +17,61 @@ export type Course = {
   keywords: string;
   course_url: string;
   duration_to_complete: string;
+};
+
+export type CourseObject = {
+  id: number;
+  course_title: string;
+  rating: string;
+  level: string;
+  schedule: string;
+  what_you_will_learn: string;
+  skill_gain: string;
+  modules: string;
+  instructor: string;
+  offered_by: string;
+  department: string;
+  course_url: string;
+  duration_to_complete: string;
+};
+
+export type KeywordType = {
+  [keyword_name: string]: string;
+};
+
+export const getKeywords = async () => {
+  const result = await pool.query("SELECT keyword_name FROM keywords");
+  const data: string[] = [];
+  result.rows.forEach((r: KeywordType) => data.push(r.keyword_name));
+  return data;
+};
+
+export const getCourses = async () => {
+  const courses = await pool.query("SELECT * FROM courses;");
+
+  // Assign data into data object
+  const new_data: CourseObject[] = [];
+
+  for (let i = 0; i < courses.rows.length; i++) {
+    const clean_data: CourseObject = {
+      id: courses.rows[i].course_id,
+      course_title: courses.rows[i].course_title,
+      rating: courses.rows[i].rating,
+      level: courses.rows[i].level,
+      schedule: courses.rows[i].schedule,
+      what_you_will_learn: courses.rows[i].description,
+      skill_gain: courses.rows[i].skill_gain,
+      modules: courses.rows[i].modules,
+      instructor: courses.rows[i].instructor,
+      offered_by: courses.rows[i].offered_by,
+      department: courses.rows[i].department,
+      course_url: courses.rows[i].course_url,
+      duration_to_complete: courses.rows[i].duration,
+    };
+    new_data.push(clean_data);
+  }
+
+  return new_data;
 };
 
 export const findUserInterests = async (user_id: string) => {
@@ -40,14 +94,16 @@ export const getRecommendationForUser = async (user_id: string) => {
   const file_name = "course_keyword.csv";
   const file = await fs.readFile(process.cwd() + `/app/${file_name}`, "utf8");
 
-  let data = file.split("\n"); // read every row from csv file
+  const data = file.split("\n"); // read every row from csv file
 
-  let course_keyword_matrix: any[] = [];
+  const course_keyword_matrix: number[][] = [];
 
   data.slice(1).forEach((row) => {
     const current_row = row.split("\t");
     const row_data = current_row.slice(2);
-    if (row_data.length > 0) course_keyword_matrix.push(row_data);
+    const row_data_int: number[] = []
+    row_data.forEach((item, index) => row_data_int[index] = parseInt(item))
+    if (row_data.length > 0) course_keyword_matrix.push(row_data_int);
   });
 
   const all_keywords = data[0].split("\t").slice(2);
@@ -152,7 +208,7 @@ export const populateCourseData = async () => {
 
     if (find_course.rowCount == 0) {
       // if course does not exists => add course to database
-      const add_course = await pool.query(
+      await pool.query(
         "INSERT INTO courses(course_title, instructor, schedule, department, description, skill_gain, \
         offered_by, course_url, duration, modules, level, rating) VALUES ($1, $2, $3, $4, $5, $6, $7, \
         $8, $9, $10, $11, $12);",
@@ -180,7 +236,7 @@ export const populateCourseData = async () => {
       console.log("Course ID: ", course_id);
 
       // delete existing keywords for the course
-      const delete_past_keywords = await pool.query(
+      await pool.query(
         "DELETE FROM courses_keywords WHERE course_id = $1 ;",
         [course_id]
       );
@@ -197,7 +253,7 @@ export const populateCourseData = async () => {
         const keyword_id = find_keyword_id.rows[0].keyword_id;
         console.log("Keyword: ", key, " id: ", keyword_id);
 
-        const insert_course_keyword = await pool.query(
+        await pool.query(
           "INSERT INTO courses_keywords(course_id, keyword_id) values ($1, $2) on conflict (course_id, keyword_id) do nothing;",
           [course_id, keyword_id]
         );

@@ -39,7 +39,7 @@ export default function Home() {
       if (response.ok) {
         if (response.status === 200) {
           const keyword_list: string[] = [];
-          result.keywords.forEach((key: { keyword_name: any }) =>
+          result.keywords.forEach((key: { keyword_name: string }) =>
             keyword_list.push(key.keyword_name)
           );
           console.log(result.keywords);

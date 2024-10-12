@@ -1,16 +1,6 @@
+import { getKeywords } from "@/lib/getRmd";
 import pool from "../../../lib/db";
 import { NextResponse } from "next/server";
-
-export type KeywordType = {
-  [keyword_name: string]: string;
-};
-
-export const getKeywords = async () => {
-  const result = await pool.query("SELECT keyword_name FROM keywords");
-  const data: string[] = [];
-  result.rows.forEach((r: KeywordType) => data.push(r.keyword_name));
-  return data;
-};
 
 export async function GET() {
   try {
@@ -33,7 +23,7 @@ export async function POST(request: Request) {
     const keywords_json = JSON.parse(keywords);
 
     // delete past entries for user interests
-    const delete_past_interests = await pool.query(
+    await pool.query(
       "DELETE FROM user_interests WHERE user_id = $1 ;",
       [user_id]
     );
@@ -55,13 +45,13 @@ export async function POST(request: Request) {
 
       if (find_user_interest.rowCount === 0) {
         // insert if not exists
-        const insert_user_interest = await pool.query(
+        await pool.query(
           "INSERT INTO user_interests(user_id, keyword_id, ranking) values ($1, $2, $3) on conflict (user_id, keyword_id) do nothing;",
           [user_id, keyword_id, 10 - i]
         );
       } else {
         // update values
-        const update_user_interest = await pool.query(
+        await pool.query(
           "UPDATE user_interests SET ranking = $1 WHERE user_id = $2 and keyword_id = $3;",
           [10 - i, user_id, keyword_id]
         );

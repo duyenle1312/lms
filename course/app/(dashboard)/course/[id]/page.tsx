@@ -1,7 +1,6 @@
-import { getCourses } from "@/app/(dashboard)/search/page";
 import SearchTable from "@/components/search";
 import { Button } from "@/components/ui/button";
-import { getRecommendationForCourse } from "@/lib/getRmd";
+import { getCourses, getRecommendationForCourse } from "@/lib/getRmd";
 
 export default async function Course({ params }: { params: { id: string } }) {
   const data = await getCourses();
@@ -25,7 +24,7 @@ export default async function Course({ params }: { params: { id: string } }) {
             <span className="font-bold">Instructor:</span> {course?.instructor}
           </p>
           <p>
-            <span className="font-bold">Department:</span> {course?.keyword}
+            <span className="font-bold">Department:</span> {course?.department}
           </p>
           <p>
             <span className="font-bold">Level:</span> {course?.level}
