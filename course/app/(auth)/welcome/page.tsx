@@ -16,16 +16,16 @@ import { useRouter } from "next/navigation";
 
 export default function Welcome() {
   const router = useRouter();
-  const [selectedKeywords, setSelectedKeywords] = useState<string[]>([]);
-  const [allKeywords, setAllKeywords] = useState<string[]>([]);
+  const [selectedTopics, setSelectedTopics] = useState<string[]>([]);
+  const [allTopics, setAllTopics] = useState<string[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    fetch("/api/keyword")
+    fetch("/api/topic")
       .then((res) => res.json())
       .then((data) => {
-        setAllKeywords(data.keywords);
+        setAllTopics(data.keywords);
         setLoading(false);
       });
   }, []);
@@ -36,34 +36,34 @@ export default function Welcome() {
         <p>Loading...</p>
       </div>
     );
-  if (!allKeywords) return <p>No keywords found</p>;
+  if (!allTopics) return <p>No available topis found</p>;
 
-  const handleKeywordClick = (keyword: string) => {
-    if (selectedKeywords.includes(keyword)) {
+  const handleTopicClick = (keyword: string) => {
+    if (selectedTopics.includes(keyword)) {
       // remove keyword if exists
-      setSelectedKeywords(selectedKeywords.filter((k) => k !== keyword));
-    } else if (selectedKeywords.length < 10) {
+      setSelectedTopics(selectedTopics.filter((k) => k !== keyword));
+    } else if (selectedTopics.length < 10) {
       // add keyword to list
-      setSelectedKeywords([...selectedKeywords, keyword]);
+      setSelectedTopics([...selectedTopics, keyword]);
     }
   };
 
-  const handleRemoveKeyword = (keyword: string) => {
-    setSelectedKeywords(selectedKeywords.filter((k) => k !== keyword));
+  const handleRemoveTopic = (keyword: string) => {
+    setSelectedTopics(selectedTopics.filter((k) => k !== keyword));
   };
 
   const handleSubmit = async () => {
     setSubmitting(true);
-    console.log("Submitted keywords:", selectedKeywords);
+    console.log("Submitted topics:", selectedTopics);
     const user = JSON.parse(localStorage.getItem("user") || "");
 
     if (user) {
-      const response = await fetch(`/api/keyword`, {
+      const response = await fetch(`/api/topic`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           user_id: user.user_id,
-          keywords: JSON.stringify(selectedKeywords),
+          topics: JSON.stringify(selectedTopics),
         }),
       });
       const result = await response.json();
@@ -71,6 +71,8 @@ export default function Welcome() {
 
       if (response.status == 201) {
         router.push("/"); // Navigate to the home page
+      } else {
+        alert(`${result?.message}. Please refresh the page and submit again.`)
       }
     }
   };
@@ -92,20 +94,20 @@ export default function Welcome() {
               <h3 className="text-lg font-semibold mb-2">Available Topics</h3>
               <ScrollArea className="h-[500px] w-full rounded-md border p-4">
                 <div className="grid md:grid-cols-3 gap-2">
-                  {allKeywords?.sort().map((keyword) => (
+                  {allTopics?.sort().map((keyword) => (
                     <Badge
                       key={keyword}
                       variant={
-                        selectedKeywords.includes(keyword)
+                        selectedTopics.includes(keyword)
                           ? "secondary"
                           : "outline"
                       }
                       className={`cursor-pointer text-sm ${
-                        selectedKeywords.includes(keyword)
+                        selectedTopics.includes(keyword)
                           ? "font-bold"
                           : "font-normal"
                       }`}
-                      onClick={() => handleKeywordClick(keyword)}
+                      onClick={() => handleTopicClick(keyword)}
                     >
                       {keyword}
                     </Badge>
@@ -115,11 +117,11 @@ export default function Welcome() {
             </div>
             <div className="col-span-1">
               <h3 className="text-lg font-semibold mb-2">
-                Your Top {selectedKeywords.length} Topics
+                Your Top {selectedTopics.length} Topics
               </h3>
               <ScrollArea className="h-[500px] w-full rounded-md border p-4">
                 <div className="space-y-2">
-                  {selectedKeywords.map((keyword, index) => (
+                  {selectedTopics.map((keyword, index) => (
                     <div
                       key={keyword}
                       className="flex items-center gap-2 p-2  rounded-md"
@@ -131,7 +133,7 @@ export default function Welcome() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleRemoveKeyword(keyword)}
+                        onClick={() => handleRemoveTopic(keyword)}
                         className="h-4 w-4"
                       >
                         <X size={12} />
@@ -146,12 +148,12 @@ export default function Welcome() {
         </CardContent>
         <CardFooter className="flex justify-between">
           <p className="text-sm text-muted-foreground">
-            {10 - selectedKeywords.length} more{" "}
-            {10 - selectedKeywords.length === 1 ? "topic" : "topics"} to select
+            {10 - selectedTopics.length} more{" "}
+            {10 - selectedTopics.length === 1 ? "topic" : "topics"} to select
           </p>
           <Button
             onClick={handleSubmit}
-            disabled={selectedKeywords.length < 1}
+            disabled={selectedTopics.length < 1}
             className={`font-bold ${
               submitting && "bg-blue-500 hover:bg-blue-500 "
             }`}

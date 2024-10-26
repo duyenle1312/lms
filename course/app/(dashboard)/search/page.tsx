@@ -1,4 +1,4 @@
-import SearchTable from "@/components/search";
+import SearchTable from "@/components/dataTable";
 import React from "react";
 import { getCourses } from "@/lib/getRmd";
 

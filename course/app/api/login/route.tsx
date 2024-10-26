@@ -13,7 +13,6 @@ export async function POST(request: Request) {
 
     if (result.rows.length > 0) {
       // Load hash from your password DB.
-      // true
       const passwordMatches = compareSync(password, result.rows[0].password);
 
       if (passwordMatches) {
@@ -31,7 +30,7 @@ export async function POST(request: Request) {
       }
     } else {
       return NextResponse.json(
-        { status: "Error", message: "User not found" },
+        { status: "Error", message: "User not found. Please sign up instead." },
         { status: 404 }
       );
     }

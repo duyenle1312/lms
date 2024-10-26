@@ -1,4 +1,4 @@
-import SearchTable from "@/components/search";
+import SearchTable from "@/components/dataTable";
 import { Button } from "@/components/ui/button";
 import { getCourses, getRecommendationForCourse } from "@/lib/getRmd";
 

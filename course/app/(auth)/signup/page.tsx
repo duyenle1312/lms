@@ -62,7 +62,7 @@ export default function SignUp() {
                 <Label htmlFor="first-name">First name</Label>
                 <Input
                   id="first-name"
-                  placeholder="Max"
+                  placeholder="Duyen"
                   required
                   onChange={(e) => {
                     setFirstName(e.target.value);
@@ -73,7 +73,7 @@ export default function SignUp() {
                 <Label htmlFor="last-name">Last name</Label>
                 <Input
                   id="last-name"
-                  placeholder="Robinson"
+                  placeholder="Le"
                   required
                   onChange={(e) => {
                     setLastName(e.target.value);
@@ -98,6 +98,7 @@ export default function SignUp() {
               <Input
                 id="password"
                 type="password"
+                required
                 onChange={(e) => {
                   setPassword(e.target.value);
                 }}

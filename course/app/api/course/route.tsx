@@ -4,7 +4,6 @@ import { populateCourseData } from "@/lib/getRmd";
 export async function GET() {
   try {
     const data = await populateCourseData();
-    console.log("Data: ", data.length);
 
     return NextResponse.json({ courses: data }, { status: 200 });
   } catch (error: unknown) {

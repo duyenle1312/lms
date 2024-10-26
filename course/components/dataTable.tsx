@@ -103,7 +103,7 @@ export default function SearchTable({
             <div className="my-2">
               <p>
                 {/* <span className="font-semibold">Division:</span>{" "} */}
-                {row.getValue("keyword")}
+                {row.getValue("department")}
               </p>
             </div>
 
@@ -126,7 +126,7 @@ export default function SearchTable({
       cell: ({ row }) => <div>{row.getValue("what_you_will_learn")}</div>,
     },
     {
-      accessorKey: "keyword",
+      accessorKey: "department",
       header: ({ column }) => {
         return (
           <Button
@@ -139,7 +139,7 @@ export default function SearchTable({
           </Button>
         );
       },
-      cell: ({ row }) => <div>{row.getValue("keyword")}</div>,
+      cell: ({ row }) => <div>{row.getValue("department")}</div>,
     },
     {
       accessorKey: "instructor",
@@ -167,7 +167,7 @@ export default function SearchTable({
       id: false,
       instructor: false,
       what_you_will_learn: false,
-      keyword: false,
+      department: false,
     });
   const [rowSelection, setRowSelection] = React.useState({});
   const [pagination, setPagination] = React.useState<PaginationState>({
@@ -216,7 +216,7 @@ export default function SearchTable({
             />
             <Select
               onValueChange={(value) =>
-                table.getColumn("keyword")?.setFilterValue(value)
+                table.getColumn("department")?.setFilterValue(value)
               }
             >
               <SelectTrigger className="w-[180px]">

@@ -7,7 +7,6 @@ export async function GET(request: NextRequest) {
   if (user_id) {
     try {
       const data = await getRecommendationForUser(user_id);
-      // console.log("Data: ", data);
 
       return NextResponse.json({ courses: data }, { status: 200 });
     } catch (error: unknown) {
