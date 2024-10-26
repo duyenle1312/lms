@@ -226,26 +226,26 @@ export const populateCourseData = async () => {
       );  
     } else {
       // if course exists => update course info
-      const id = find_course.rows[0].course_id;
-      await pool.query(
-        "UPDATE courses SET course_title=$1, instructor=$2, schedule=$3, department=$4, description=$5, skill_gain=$6, \
-        offered_by=$7, course_url=$8, duration=$9, modules=$10, level=$11, rating=$12 WHERE course_id=$13;",
-        [
-          clean_data.course_title,
-          clean_data.instructor,
-          clean_data.schedule,
-          clean_data.department,
-          clean_data.what_you_will_learn,
-          clean_data.skill_gain,
-          clean_data.offered_by,
-          clean_data.course_url,
-          clean_data.duration_to_complete,
-          clean_data.modules,
-          clean_data.level,
-          clean_data.rating,
-          id
-        ]
-      );
+      // const id = find_course.rows[0].course_id;
+      // await pool.query(
+      //   "UPDATE courses SET course_title=$1, instructor=$2, schedule=$3, department=$4, description=$5, skill_gain=$6, \
+      //   offered_by=$7, course_url=$8, duration=$9, modules=$10, level=$11, rating=$12 WHERE course_id=$13;",
+      //   [
+      //     clean_data.course_title,
+      //     clean_data.instructor,
+      //     clean_data.schedule,
+      //     clean_data.department,
+      //     clean_data.what_you_will_learn,
+      //     clean_data.skill_gain,
+      //     clean_data.offered_by,
+      //     clean_data.course_url,
+      //     clean_data.duration_to_complete,
+      //     clean_data.modules,
+      //     clean_data.level,
+      //     clean_data.rating,
+      //     id
+      //   ]
+      // );
     }
 
     find_course = await pool.query(

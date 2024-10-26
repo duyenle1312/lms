@@ -9,20 +9,20 @@ export default function Home() {
   >([]);
   const [topics, setTopics] = useState<string[]>([]);
 
-  const populateData = async () => {
-    const response = await fetch(`/api/course`, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" },
-    });
-    const result = await response.json();
-    console.log(result);
+  // const populateData = async () => {
+  //   const response = await fetch(`/api/course`, {
+  //     method: "GET",
+  //     headers: { "Content-Type": "application/json" },
+  //   });
+  //   const result = await response.json();
+  //   console.log(result);
 
-    if (response.ok) {
-      if (response.status === 200) {
-      }
-    } else {
-    }
-  };
+  //   if (response.ok) {
+  //     if (response.status === 200) {
+  //     }
+  //   } else {
+  //   }
+  // };
 
   const getUserTopicsOfInterest = async () => {
     const user = localStorage.getItem("user");
@@ -46,6 +46,7 @@ export default function Home() {
           setTopics(topic_list);
         }
       } else {
+        
       }
     }
   };
@@ -82,14 +83,14 @@ export default function Home() {
 
   return (
     <div className="">
-      <div className="flex md:flex-row flex-col justify-center items-center pt-12 gap-5 w-full">
-        {/* <Button onClick={getRecommendationForUser} className="font-semibold">
+      {/* <div className="flex md:flex-row flex-col justify-center items-center pt-12 gap-5 w-full">
+        <Button onClick={getRecommendationForUser} className="font-semibold">
           Get Recommendation
-        </Button> */}
+        </Button>
         <Button onClick={populateData} className="font-semibold">
           Populate Data
         </Button>
-      </div>
+      </div> */}
       <div className="flex flex-col justify-center items-center pt-10 p-6 md:text-lg">
         {recommendation?.length > 0 && (
           <div className="flex w-max-screen flex-col gap-y-1 border-[1.5px] border-black px-3 py-5 rounded-lg">
