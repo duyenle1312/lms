@@ -13,17 +13,13 @@ export default function useAuth() {
   };
   const [user, setUser] = useState(default_data);
 
-  const getUser = () => {
+  useEffect(() => {
     const user_string = localStorage.getItem("user");
     if (user_string) {
       const user = JSON.parse(user_string || "{}");
-      return user;
-    } else return default_data;
-  };
-
-  useEffect(() => {
-    setUser(getUser());
-  }, []);
+      return setUser(user);
+    } else  setUser(default_data);
+  });
 
   return {
     setUser,

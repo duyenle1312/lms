@@ -25,7 +25,7 @@ export default function Welcome() {
     fetch("/api/topic")
       .then((res) => res.json())
       .then((data) => {
-        setAllTopics(data.keywords);
+        setAllTopics(data.topics);
         setLoading(false);
       });
   }, []);

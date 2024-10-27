@@ -1,12 +1,12 @@
-import { NextResponse } from "next/server";
-import { populateCourseData } from "@/lib/getRmd";
+import { getRecommendationForCourse } from "@/lib/getRmd";
+import { NextResponse, NextRequest } from "next/server";
 
-export const dynamic = 'force-dynamic';
-
-export async function GET() {
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
   try {
-    const data = await populateCourseData();
-
+    const data = await getRecommendationForCourse(params.id);
     return NextResponse.json({ courses: data }, { status: 200 });
   } catch (error: unknown) {
     if (error instanceof Error) {

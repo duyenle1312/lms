@@ -3,6 +3,8 @@
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
+export const dynamic = 'force-dynamic';
+
 export default function Home() {
   const [recommendation, setRecommendation] = useState<
     { id: string; title: string }[]

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Navigation from "@/components/nav";
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,6 +16,7 @@ export default function Layout({
     <>
       <Navigation />
       <main>{children}</main>
+      <Toaster/>
       {/* <Footer /> */}
     </>
   );

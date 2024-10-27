@@ -1,11 +1,11 @@
 import { getTopics } from "@/lib/getRmd";
-import pool from "../../../lib/db";
+import pool from "@/lib/db";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
     const data = await getTopics();
-    return NextResponse.json({ keywords: data }, { status: 200 });
+    return NextResponse.json({ topics: data }, { status: 200 });
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.log(error.message);

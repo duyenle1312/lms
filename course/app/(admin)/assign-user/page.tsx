@@ -20,8 +20,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useRouter } from "next/navigation";
+import useAuth from "@/lib/useAuth";
 
 const AssignUserRole = () => {
+  const router = useRouter();
+  const { user } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
 
   const getUserData = async () => {
@@ -45,15 +49,20 @@ const AssignUserRole = () => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {users?.map((user: User) => (
-            <TableRow key={user.user_id}>
-              <TableCell className="font-medium">{user.user_id}</TableCell>
-              <TableCell>{user.name}</TableCell>
-              <TableCell>{user.email}</TableCell>
+          {users?.map((user_item: User) => (
+            <TableRow key={user_item.user_id}>
+              <TableCell className="font-medium">{user_item.user_id}</TableCell>
+              <TableCell>{user_item.name}</TableCell>
+              <TableCell>{user_item.email}</TableCell>
               <TableCell>
                 <Select
                   onValueChange={(value) => {
-                    changeUserRole(user.user_id, value)
+                    changeUserRole(user_item.user_id, value);
+                    if (user_item.user_id == user?.user_id) {
+                      // if current user's role is modified, force to login again to update role
+                      localStorage.removeItem("user")
+                      router.push("/login");
+                    }
                   }}
                   defaultValue={user?.role}
                 >

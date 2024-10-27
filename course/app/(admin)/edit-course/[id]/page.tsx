@@ -7,13 +7,6 @@ import {
   CardHeader,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -34,10 +27,10 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/hooks/use-toast";
 import { MultiSelect } from "@/components/ui/multi-select";
-import { createCourse } from "@/lib/dashboard";
+import { editCourse, getTopicsByCourse } from "@/lib/dashboard";
 
 const FormSchema = z.object({
-  title: z.string().min(3, {
+  course_title: z.string().min(3, {
     message: "Title must be at least 3 characters.",
   }),
   description: z.string().min(3, {
@@ -46,19 +39,37 @@ const FormSchema = z.object({
   instructor: z.string().min(2, {
     message: "Time must be at least 2 characters.",
   }),
-  time: z.string().min(2, {
+  schedule: z.string().min(2, {
     message: "Time must be at least 2 characters.",
   }),
-  credit: z.string(),
   offered_by: z.string(),
   department: z.string(),
   skill_gain: z.string(),
   level: z.string(),
-  duration: z.number(),
+  duration: z.string(),
+  rating: z.string(),
 });
 
+export type CourseORM = {
+  course_id: string;
+  created_at: string;
+  course_title: string;
+  instructor: string;
+  description: string;
+  schedule: string;
+  department: string;
+  skill_gain: string;
+  offered_by: string;
+  course_url: string;
+  duration: string;
+  modules: string;
+  level: string;
+  rating: string;
+  created_by: string;
+};
 
-export default function CourseInfo() {
+export default function EditCourse({ params }: { params: { id: string } }) {
+  const [course, setCourse] = useState<CourseORM>();
   const { toast } = useToast();
   const { user } = useAuth();
   const router = useRouter();
@@ -68,57 +79,25 @@ export default function CourseInfo() {
   >([]);
   const [loading, setLoading] = useState(true);
 
-  const courseDetails = {
-    title: "Introduction to Programming",
-    instructor: "Prof. Duyen Le",
-    description: "This is the most amazing course!",
-    credit: "3",
-    time: "Flexible Schedule",
-    offered_by: "University of Vermont",
-    department: "Computer Science",
-    skill_gain: "",
-    duration: 90,
-    level: "Beginner level",
-  };
-
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: courseDetails,
+    defaultValues: course,
   });
-
-  async function onSubmit(info: z.infer<typeof FormSchema>) {
-    const data = {
-      id: 0,
-      course_title: info.title,
-      instructor: info.instructor,
-      what_you_will_learn: info.description,
-      credit: info.credit,
-      schedule: info.time,
-      offered_by: info.offered_by,
-      department: info.department,
-      skill_gain: info.skill_gain,
-      duration_to_complete: info.duration.toString(),
-      level: info.level,
-      course_url: "",
-      modules: "",
-      rating: "",
-    };
-
-    const result = await createCourse(data, selectedTopics, user?.user_id);
-    console.log(result);
-    if (result?.result !== false) {
-      router.push(`/course/${result?.course_id}`);
-    } else {
-      toast({
-        title: "Error creating course",
-        description: result?.message,
-      });
-    }
-  }
 
   useEffect(() => {
     // Only admin and teacher can view the dashboard
     if (user.user_id !== "" && user.role === "Student") router.push(`/`);
+
+    fetch(`/api/course/${params.id}`)
+      .then((res) => res.json())
+      .then(async (data) => {
+        setCourse(data.course);
+        form.reset(data.course);
+        const topics_result = await getTopicsByCourse(data.course.course_id);
+        const topics = topics_result?.topics.split(",")
+        setSelectedTopics(topics)
+      });
+
     fetch("/api/topic")
       .then((res) => res.json())
       .then((data) => {
@@ -129,9 +108,39 @@ export default function CourseInfo() {
         setAllTopics(topicsList);
         setLoading(false);
       });
-  }, [user, router]);
+  }, [form, params.id, router, user.role, user.user_id]);
 
-  if (loading)
+  async function onSubmit(info: z.infer<typeof FormSchema>) {
+    const data = {
+      id: parseInt(course?.course_id || ""),
+      course_title: info.course_title,
+      instructor: info.instructor,
+      what_you_will_learn: info.description,
+      schedule: info.schedule,
+      offered_by: info.offered_by,
+      department: info.department,
+      skill_gain: info.skill_gain,
+      duration_to_complete: info.duration.toString(),
+      level: info.level,
+      course_url: course?.course_url || "",
+      modules: course?.modules || "",
+      rating: info.rating.toString(),
+    };
+   
+    const result = await editCourse(data, selectedTopics, user?.user_id);
+    console.log(result);
+
+    if (result?.result !== false) {
+      router.push(`/course/${result?.course_id}`);
+    } else {
+      toast({
+        title: "Error editing course",
+        description: result?.message,
+      });
+    }
+  }
+
+  if (loading || course === undefined || selectedTopics?.length === 0)
     return (
       <div className="flex justify-center p-12">
         <p>Loading...</p>
@@ -152,7 +161,7 @@ export default function CourseInfo() {
               <div className="grid md:col-span-5 gap-2">
                 <FormField
                   control={form.control}
-                  name="title"
+                  name="course_title"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Title</FormLabel>
@@ -271,7 +280,7 @@ export default function CourseInfo() {
               <div className="grid md:col-span-1 col-span-4">
                 <FormField
                   control={form.control}
-                  name="time"
+                  name="schedule"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Schedule</FormLabel>
@@ -316,25 +325,12 @@ export default function CourseInfo() {
               <div className="grid md:col-span-1 col-span-4">
                 <FormField
                   control={form.control}
-                  name="credit"
+                  name="rating"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Credits</FormLabel>
+                      <FormLabel>Rating</FormLabel>
                       <FormControl>
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={courseDetails?.credit}
-                        >
-                          <SelectTrigger id="credit" className="">
-                            <SelectValue placeholder="Select Credits" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="1">1</SelectItem>
-                            <SelectItem value="2">2</SelectItem>
-                            <SelectItem value="3">3</SelectItem>
-                            <SelectItem value="4">4</SelectItem>
-                          </SelectContent>
-                        </Select>
+                        <Input max={5} min={0} type="number" placeholder="4" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

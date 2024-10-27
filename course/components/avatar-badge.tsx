@@ -41,7 +41,7 @@ const AvatarBadge = () => {
               <AvatarFallback>User</AvatarFallback>
             </Avatar>
             <div className="grid flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-semibold">{user?.name}</span>
+              <span className="truncate font-semibold">{user?.name} ({user?.role})</span>
               <span className="truncate text-xs">{user?.email}</span>
             </div>
             <div className="flex justify-center items-center">
