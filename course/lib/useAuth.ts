@@ -19,7 +19,7 @@ export default function useAuth() {
       const user = JSON.parse(user_string || "{}");
       return setUser(user);
     } else  setUser(default_data);
-  });
+  }, []);
 
   return {
     setUser,
