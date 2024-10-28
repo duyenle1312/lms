@@ -19,8 +19,9 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { dropCourse, enrollStudent } from "@/lib/dashboard";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
 export default function Course({ params }: { params: { id: string } }) {
   const { toast } = useToast();
@@ -28,10 +29,26 @@ export default function Course({ params }: { params: { id: string } }) {
   const [rmdCourses, setRmdCourses] = useState<CourseObject[]>();
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [isEnrolled, setIsEnrolled] = useState(null);
   const router = useRouter();
 
-  const studentEnroll = () => {
-    console.log(user);
+  const studentEnroll = async () => {
+    let result;
+    if (!isEnrolled) {
+      result = await enrollStudent(user?.user_id, course?.course_id || "");
+    } else {
+      result = await dropCourse(user?.user_id, course?.course_id || "");
+    }
+    if (result?.status == true) {
+      toast({
+        title: `${result?.message}`,
+      });
+    } else {
+      toast({
+        title: `Error: ${result?.message}`,
+      });
+    }
+    router.push("/");
   };
 
   const deleteCourse = async () => {
@@ -65,10 +82,22 @@ export default function Course({ params }: { params: { id: string } }) {
   };
 
   useEffect(() => {
+    const user_storage = localStorage.getItem("user");
+    const user_info = JSON.parse(user_storage || "");
+
     fetch(`/api/course/${params.id}`)
       .then((res) => res.json())
       .then((data) => {
         setCourse(data.course);
+        if (user_info?.user_id && data.course?.course_id) {
+          fetch(
+            `/api/course/isEnrolled?user_id=${user_info?.user_id}&course_id=${data.course?.course_id}`
+          )
+            .then((res) => res.json())
+            .then((data) => {
+              setIsEnrolled(data?.result.status);
+            });
+        }
       });
 
     fetch(`/api/course/similar/${params.id}`)
@@ -76,10 +105,11 @@ export default function Course({ params }: { params: { id: string } }) {
       .then((data) => {
         setRmdCourses(data.courses);
       });
-    setLoading(false);
-  }, [params.id, user]);
 
-  if (loading || course == undefined)
+    setLoading(false);
+  }, [params.id]);
+
+  if (loading || course === undefined || isEnrolled === null)
     return (
       <div className="flex justify-center p-12">
         <p>Loading...</p>
@@ -159,7 +189,7 @@ export default function Course({ params }: { params: { id: string } }) {
             onClick={studentEnroll}
             className="bg-green-600 text-white font-bold mt-5"
           >
-            Enroll Course
+            {isEnrolled ? "Drop Course" : "Enroll Course"}
           </Button>
         </div>
       </div>

@@ -37,6 +37,81 @@ export const getTopicsByCourse = async (course_id: string) => {
   return topics_result.rows[0];
 };
 
+export const isEnrolled = async (user_id: string, course_id: string) => {
+  try {
+    const find_enrollment = await pool.query(
+      "SELECT * FROM course_enrollments WHERE user_id=$1 AND course_id=$2;",
+      [user_id, course_id]
+    );
+    if (find_enrollment.rowCount === 0) {
+      return { status: false, message: "Does not enroll in course." };
+    } else {
+      return { status: true, message: "Enrolled in course." };
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error.message);
+      return { status: false, message: error.message };
+    }
+  }
+};
+
+export const enrollStudent = async (user_id: string, course_id: string) => {
+  try {
+    if (user_id && course_id) {
+      await pool.query(
+        "INSERT INTO course_enrollments (course_id, user_id) values ($1, $2) on conflict (course_id, user_id) do nothing;",
+        [course_id, user_id]
+      );
+      return { status: true, message: "Successfully enroll in course!" };
+    } else {
+      return { status: false, message: "Missing user ID or course ID!" };
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error.message);
+      return { status: false, message: error.message };
+    }
+  }
+};
+
+export const dropCourse = async (user_id: string, course_id: string) => {
+  try {
+    if (user_id && course_id) {
+      await pool.query(
+        "DELETE FROM course_enrollments WHERE user_id=$1 AND course_id=$2;",
+        [user_id, course_id]
+      );
+      return { status: true, message: "Successfully drop the course!" };
+    } else {
+      return { status: false, message: "Missing user ID or course ID!" };
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error.message);
+      return { status: false, message: error.message };
+    }
+  }
+};
+
+export const getEnrolledCourseByUser = async (user_id: string) => {
+  try {
+    if (user_id) {
+      const response = await pool.query(
+        "SELECT c.course_id , c.course_title , c.instructor FROM course_enrollments ce JOIN courses c ON ce.course_id = c.course_id JOIN users u ON u.user_id = ce.user_id WHERE u.user_id=$1;",
+        [user_id]
+      );
+      return { data: response.rows, message: "Success" };
+    } else {
+      return { data: [], message: "Missing user ID!" };
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error.message);
+      return { data: [], message: error.message };
+    }
+  }
+};
 export const editCourse = async (
   data: CourseObject,
   topics: string[],

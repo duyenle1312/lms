@@ -14,7 +14,7 @@ export type User = {
 const Navigation = () => {
 
   return (
-    <div className="flex md:flex-row flex-col justify-between bg-gray-100 md:px-16 px-6">
+    <div className="flex md:flex-row flex-col justify-between border-b-2 md:px-16 px-6">
       <div className="py-5 space-x-5">
         <a href="/" className="font-bold text-blue-800">
           Home
@@ -23,10 +23,13 @@ const Navigation = () => {
           Search
         </a>
         <a href="/welcome" className="font-bold text-blue-800">
-          Topics
+          Topic
         </a>
         <a href="/dashboard" className="font-bold text-blue-800">
           Dashboard
+        </a>
+        <a href="/enrollment" className="font-bold text-blue-800">
+          Enrollment
         </a>
       </div>
 
