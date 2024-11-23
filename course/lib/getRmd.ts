@@ -1,4 +1,3 @@
-import { removeStopwords } from "stopword";
 import { promises as fs } from "fs";
 import pool from "./db";
 import { RecommendationForCourse, RecommendationForUser } from "./classes";
