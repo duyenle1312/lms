@@ -3,7 +3,7 @@
 import { CourseORM } from "@/app/(admin)/edit-course/[id]/page";
 import SearchTable from "@/components/dataTable";
 import { Button } from "@/components/ui/button";
-import { CourseObject } from "@/lib/getRmd";
+import { Course as CourseObject } from "@/lib/getRmd";
 import useAuth from "@/lib/useAuth";
 import { useEffect, useState } from "react";
 import { useToast } from "@/hooks/use-toast";

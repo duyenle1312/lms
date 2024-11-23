@@ -1,6 +1,6 @@
 "use server";
 import pool from "./db";
-import { CourseObject } from "./getRmd";
+import { Course as CourseObject } from "./getRmd";
 
 export const getUsers = async () => {
   const result = await pool.query("SELECT * FROM users;");

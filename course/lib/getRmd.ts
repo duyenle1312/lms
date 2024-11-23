@@ -14,25 +14,9 @@ export type Course = {
   instructor: string;
   offered_by: string;
   department: string;
-  topics: string;
   course_url: string;
   duration_to_complete: string;
-};
-
-export type CourseObject = {
-  id: number;
-  course_title: string;
-  rating: string;
-  level: string;
-  schedule: string;
-  what_you_will_learn: string;
-  skill_gain: string;
-  modules: string;
-  instructor: string;
-  offered_by: string;
-  department: string;
-  course_url: string;
-  duration_to_complete: string;
+  topics?: string;
 };
 
 export type TopicType = {
@@ -50,10 +34,10 @@ export const getCourses = async () => {
   const courses = await pool.query("SELECT * FROM courses;");
 
   // Assign data into data object
-  const new_data: CourseObject[] = [];
+  const new_data: Course[] = [];
 
   for (let i = 0; i < courses.rows.length; i++) {
-    const clean_data: CourseObject = {
+    const clean_data: Course = {
       id: courses.rows[i].course_id,
       course_title: courses.rows[i].course_title,
       rating: courses.rows[i].rating,
@@ -121,7 +105,6 @@ export const populateCourseData = async () => {
     if (titles[i] === "duration_to_complete_(approx.)")
       titles[i] = "duration_to_complete";
   }
-  // console.log(titles);
 
   // Remove title from data
   data.splice(0, 13);
@@ -175,26 +158,26 @@ export const populateCourseData = async () => {
       );
     } else {
       // if course exists => update course info
-      // const id = find_course.rows[0].course_id;
-      // await pool.query(
-      //   "UPDATE courses SET course_title=$1, instructor=$2, schedule=$3, department=$4, description=$5, skill_gain=$6, \
-      //   offered_by=$7, course_url=$8, duration=$9, modules=$10, level=$11, rating=$12 WHERE course_id=$13;",
-      //   [
-      //     clean_data.course_title,
-      //     clean_data.instructor,
-      //     clean_data.schedule,
-      //     clean_data.department,
-      //     clean_data.what_you_will_learn,
-      //     clean_data.skill_gain,
-      //     clean_data.offered_by,
-      //     clean_data.course_url,
-      //     clean_data.duration_to_complete,
-      //     clean_data.modules,
-      //     clean_data.level,
-      //     clean_data.rating,
-      //     id
-      //   ]
-      // );
+      const id = find_course.rows[0].course_id;
+      await pool.query(
+        "UPDATE courses SET course_title=$1, instructor=$2, schedule=$3, department=$4, description=$5, skill_gain=$6, \
+        offered_by=$7, course_url=$8, duration=$9, modules=$10, level=$11, rating=$12 WHERE course_id=$13;",
+        [
+          clean_data.course_title,
+          clean_data.instructor,
+          clean_data.schedule,
+          clean_data.department,
+          clean_data.what_you_will_learn,
+          clean_data.skill_gain,
+          clean_data.offered_by,
+          clean_data.course_url,
+          clean_data.duration_to_complete,
+          clean_data.modules,
+          clean_data.level,
+          clean_data.rating,
+          id
+        ]
+      );
     }
 
     find_course = await pool.query(

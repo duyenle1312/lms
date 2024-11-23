@@ -16,16 +16,12 @@ abstract class RecommendationSystem {
 export class RecommendationForUser extends RecommendationSystem {
   user_id: number;
 
-
   constructor(user_id: number) {
     super("matrix");
     this.user_id = user_id;
   }
 
-
   async calculate() {
-    console.log("RecommendationForUser");
-
     // Create course matrix
     const topic_ids_query = await pool.query(
       "SELECT topic_id FROM topics order by topic_id;"
