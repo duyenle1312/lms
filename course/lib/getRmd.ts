@@ -194,9 +194,9 @@ export const populateCourseData = async () => {
     ]);
 
     // add new topics to the course
-    const topics = clean_data.topics.split(",");
+    const topics = clean_data?.topics?.split(",");
 
-    topics.forEach(async (key) => {
+    topics?.forEach(async (key) => {
       // Find topic id
       const find_topic_id = await pool.query(
         "SELECT topic_id FROM topics WHERE topic_name = $1",
