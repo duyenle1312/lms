@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
 
 export const dynamic = 'force-dynamic';
@@ -44,7 +43,6 @@ export default function Home() {
           result.topics.forEach((key: { topic_name: string }) =>
             topic_list.push(key.topic_name)
           );
-          console.log(result.topics);
           setTopics(topic_list);
         }
       } else {
@@ -107,13 +105,13 @@ export default function Home() {
                 })}
               </p>
             </div>
-            <p className="pl-4 font-bold">Course List</p>
+            <p className="pl-4 font-bold">Course Suggestion List</p>
             {recommendation?.map((item, i) => {
               return (
                 <a href={`/course/${item?.id}`} key={item?.id} className="flex">
-                  <Button variant="ghost" className="md:text-lg">
+                  <div className="md:text-lg hover:text-blue-700 hover:font-bold mt-3 mx-4">
                     {i + 1}. {item?.title}
-                  </Button>
+                  </div>
                 </a>
               );
             })}

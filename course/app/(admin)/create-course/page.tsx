@@ -105,7 +105,7 @@ export default function CourseInfo() {
     };
 
     const result = await createCourse(data, selectedTopics, user?.user_id);
-    console.log(result);
+
     if (result?.result !== false) {
       router.push(`/course/${result?.course_id}`);
     } else {

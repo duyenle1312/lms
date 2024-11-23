@@ -85,37 +85,64 @@ export const findUserInterests = async (user_id: string) => {
 };
 
 export const getRecommendationForUser = async (user_id: string) => {
-  const user_interests = await findUserInterests(user_id);
+  // Create course matrix
+  const topic_ids_query = await pool.query(
+    "SELECT topic_id FROM topics order by topic_id;"
+  );
 
-  // get course keyword
-  const file_name = "course_keyword.csv";
-  const file = await fs.readFile(process.cwd() + `/app/${file_name}`, "utf8");
+  const topic_ids: number[] = [];
+  topic_ids_query.rows.forEach((i: { topic_id: number }) =>
+    topic_ids.push(Number(i?.topic_id))
+  );
 
-  const data = file.split("\n"); // read every row from csv file
+  const copy_arr = (x: number) => x * 0;
+  const topic_values = topic_ids.map(copy_arr);
 
-  const course_keyword_matrix: number[][] = [];
+  const course_ids_query = await pool.query(
+    "SELECT course_id, course_title FROM courses order by course_id;"
+  );
 
-  data.slice(1).forEach((row) => {
-    const current_row = row.split("\t");
-    const row_data = current_row.slice(2);
-    const row_data_int: number[] = []
-    row_data.forEach((item, index) => row_data_int[index] = parseInt(item))
-    if (row_data.length > 0) course_keyword_matrix.push(row_data_int);
-  });
+  const course_titles: string[] = [];
+  const course_ids: Record<number, number[]> = {};
+  const courses: number[] = [];
 
-  const all_topics = data[0].split("\t").slice(2);
-  const user_matrix: number[] = [];
+  course_ids_query.rows.forEach(
+    (i: { course_id: number; course_title: string }) => {
+      courses.push(Number(i?.course_id));
+      course_titles.push(i?.course_title);
 
-  all_topics.forEach((row) => {
-    const value = user_interests.find(
-      (i: { topic_name: string }) => i.topic_name === row
-    );
-    if (value) {
-      user_matrix.push(value.ranking);
-    } else {
-      user_matrix.push(0);
+      const course = courses.indexOf(Number(i.course_id));
+      course_ids[course] = [...topic_values];
     }
-  });
+  );
+
+  const course_topic_ids_query = await pool.query(
+    "SELECT course_id, topic_id FROM courses_topics order by course_id;"
+  );
+
+  course_topic_ids_query.rows.forEach(
+    (i: { course_id: number; topic_id: number }) => {
+      const course = courses.indexOf(Number(i.course_id));
+      const topic = topic_ids.indexOf(Number(i.topic_id));
+      course_ids[course][topic] = 1;
+    }
+  );
+
+  const course_keyword_matrix: number[][] = Object.values(course_ids);
+
+  // User matrix
+  const user_topic_ids_query = await pool.query(
+    "SELECT topic_id, ranking FROM users_topics where user_id = $1;",
+    [user_id]
+  );
+
+  const user_matrix = [...topic_values]; // initialize data
+  user_topic_ids_query.rows.forEach(
+    (i: { topic_id: number; ranking: number }) => {
+      const topic = Number(i.topic_id);
+      user_matrix[topic_ids.indexOf(topic)] = Number(i.ranking);
+    }
+  );
 
   const matrix_product = (course_matrix: number[][], user_matrix: number[]) => {
     const result = [];
@@ -134,16 +161,27 @@ export const getRecommendationForUser = async (user_id: string) => {
   };
 
   const result = matrix_product(course_keyword_matrix, user_matrix);
+  
+  const course_weights: Record<number, number> = {}
+  
+  for (let i = 0; i < result.length; i++) {
+    course_weights[courses[i]] = result[i]
+  }
+  // console.log(course_weights)
+  
 
+  // Get the indexes of the top 10 courses with the highest value
   const indexes = result
     .map((value, index) => ({ value, index }))
     .sort((a, b) => b.value - a.value)
     .slice(0, 10);
 
   const recommendation: { id: string; title: string }[] = [];
+
   indexes.forEach((i) => {
-    const course_id = data.slice(1)[i.index].split("\t")[0];
-    const course_title = data.slice(1)[i.index].split("\t")[1];
+    // result has the same length with courses and course_titles array, hence their index is the same
+    const course_id = courses[i.index].toString();
+    const course_title = course_titles[i.index];
     recommendation.push({ id: course_id, title: course_title });
   });
 
@@ -223,7 +261,7 @@ export const populateCourseData = async () => {
           clean_data.level,
           clean_data.rating,
         ]
-      );  
+      );
     } else {
       // if course exists => update course info
       // const id = find_course.rows[0].course_id;
@@ -257,10 +295,9 @@ export const populateCourseData = async () => {
     console.log("Course ID: ", course_id);
 
     // delete existing keywords for the course
-    await pool.query(
-      "DELETE FROM courses_topics WHERE course_id = $1 ;",
-      [course_id]
-    );
+    await pool.query("DELETE FROM courses_topics WHERE course_id = $1 ;", [
+      course_id,
+    ]);
 
     // add new topics to the course
     const topics = clean_data.topics.split(",");
@@ -345,6 +382,7 @@ export const getRecommendationForCourse = async (id: string) => {
   };
 
   const recommendation = [];
+  const course_weights = []
   // find course similarity
   for (let i = 0; i < potential_courses.length; i++) {
     // Tokenization
@@ -379,10 +417,12 @@ export const getRecommendationForCourse = async (id: string) => {
     // console.log(targetVec);
 
     const similarity: number = cosine_similarity(courseVec, targetVec) || 0;
+    course_weights.push(similarity)
 
     if (similarity > 50.0) {
       recommendation.push(potential_courses[i]);
     }
   }
+
   return recommendation;
 };

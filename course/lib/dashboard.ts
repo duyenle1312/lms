@@ -9,11 +9,18 @@ export const getUsers = async () => {
 };
 
 export const changeUserRole = async (user_id: string, role: string) => {
-  const result = await pool.query(
-    "UPDATE users SET role=$1 where user_id = $2;",
-    [role, user_id]
-  );
-  console.log(result);
+  try {
+    await pool.query("UPDATE users SET role=$1 where user_id = $2;", [
+      role,
+      user_id,
+    ]);
+    return { status: true, message: "success" }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.log(error.message);
+      return { status: false, message: error.message };
+    }
+  }
 };
 
 export const changeUserName = async (user_id: string, name: string) => {

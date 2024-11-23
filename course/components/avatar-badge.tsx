@@ -35,7 +35,7 @@ const AvatarBadge = () => {
           <div className="flex p-1 gap-x-2 align-middle">
             <Avatar className="h-8 w-8 rounded-full">
               <AvatarImage
-                src="https://img.freepik.com/free-photo/androgynous-avatar-non-binary-queer-person_23-2151100217.jpg?semt=ais_hybrid"
+                src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"
                 alt=""
               />
               <AvatarFallback>User</AvatarFallback>
@@ -59,7 +59,7 @@ const AvatarBadge = () => {
             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar className="h-8 w-8 rounded-full">
                 <AvatarImage
-                  src="https://img.freepik.com/free-photo/androgynous-avatar-non-binary-queer-person_23-2151100217.jpg?semt=ais_hybrid"
+                  src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg"
                   alt=""
                 />
                 <AvatarFallback>User</AvatarFallback>

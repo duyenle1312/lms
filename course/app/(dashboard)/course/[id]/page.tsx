@@ -48,7 +48,7 @@ export default function Course({ params }: { params: { id: string } }) {
         title: `Error: ${result?.message}`,
       });
     }
-    router.push("/");
+    router.push("/enrollment");
   };
 
   const deleteCourse = async () => {

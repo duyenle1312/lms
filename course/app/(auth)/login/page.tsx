@@ -25,6 +25,14 @@ export default function SignIn() {
     path: string
   ) => {
     e.preventDefault();
+    if (email == "") {
+      setErrorMessage(`Error: Missing email`);
+      return;
+    }
+    if (password == "") {
+      setErrorMessage(`Error: Missing password`);
+      return;
+    }
     const response = await fetch(`/api/${path}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -39,7 +47,6 @@ export default function SignIn() {
       }
     } else {
       setErrorMessage(`Error: ${result.message}`);
-      console.log(`${path} failed`);
     }
   };
 
@@ -53,7 +60,7 @@ export default function SignIn() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 mt-3">
+          <form className="grid gap-4 mt-3">
             <div className="grid gap-2">
               <Label htmlFor="email">Email</Label>
               <Input
@@ -97,7 +104,7 @@ export default function SignIn() {
             {/* <Button variant="outline" className="w-full">
               Login with Google
             </Button> */}
-          </div>
+          </form>
           <div className="mt-4 text-center text-sm">
             Don&apos;t have an account?{" "}
             <Link href="/signup" className="underline">

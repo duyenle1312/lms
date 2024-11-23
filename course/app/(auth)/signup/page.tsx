@@ -22,7 +22,6 @@ export default function SignUp() {
   const [lastName, setLastName] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-
   const handleSubmit = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     path: string
@@ -30,6 +29,22 @@ export default function SignUp() {
     e.preventDefault();
     const name = firstName + " " + lastName;
     console.log({ email, password, name });
+    if (firstName == "") {
+      setErrorMessage(`Error: Missing first name`);
+      return;
+    }
+    if (lastName == "") {
+      setErrorMessage(`Error: Missing last name`);
+      return;
+    }
+    if (email == "") {
+      setErrorMessage(`Error: Missing email`);
+      return;
+    }
+    if (password == "") {
+      setErrorMessage(`Error: Missing password`);
+      return;
+    }
     const response = await fetch(`/api/${path}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -37,12 +52,11 @@ export default function SignUp() {
     });
     const result = await response.json();
     if (response.ok) {
-    //   console.log("Response: ", result);
+      //   console.log("Response: ", result);
       localStorage.setItem("user", JSON.stringify(result.user));
       router.push("/welcome"); // Navigate to the welcome page
     } else {
       setErrorMessage(`Error: ${result.message}`);
-      console.log(`${path} failed`);
     }
   };
 
@@ -56,7 +70,7 @@ export default function SignUp() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4">
+          <form className="grid gap-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="first-name">First name</Label>
@@ -74,7 +88,7 @@ export default function SignUp() {
                 <Input
                   id="last-name"
                   placeholder="Le"
-                  required
+                  required={true}
                   onChange={(e) => {
                     setLastName(e.target.value);
                   }}
@@ -114,7 +128,7 @@ export default function SignUp() {
             {/* <Button variant="outline" className="w-full">
               Sign In with Google
             </Button> */}
-          </div>
+          </form>
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
             <Link href="/login" className="underline">
