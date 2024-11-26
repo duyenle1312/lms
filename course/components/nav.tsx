@@ -25,7 +25,7 @@ const Navigation = () => {
         <a href="/welcome" className="font-bold text-blue-800">
           Topic
         </a>
-        <a href="/dashboard" className="font-bold text-blue-800">
+        <a href="/assign-user" className="font-bold text-blue-800">
           Dashboard
         </a>
         <a href="/enrollment" className="font-bold text-blue-800">

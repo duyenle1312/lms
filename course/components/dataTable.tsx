@@ -232,20 +232,20 @@ export default function SearchTable({
                   <SelectItem value="Computer Science">
                     Computer Science
                   </SelectItem>
-                  <SelectItem value="Data Science">Data Science</SelectItem>
+                  {/* <SelectItem value="Data Science">Data Science</SelectItem>
                   <SelectItem value="Information Technology">
                     Information Technology
-                  </SelectItem>
+                  </SelectItem> */}
                   <SelectItem value="Math and Logic">Math and Logic</SelectItem>
                   <SelectItem value="Personal Development">
                     Personal Development
                   </SelectItem>
-                  <SelectItem value="Physical Science and Engineering">
+                  {/* <SelectItem value="Physical Science and Engineering">
                     Physical Science and Engineering
-                  </SelectItem>
-                  <SelectItem value="Social Sciences">
+                  </SelectItem> */}
+                  {/* <SelectItem value="Social Sciences">
                     Social Sciences
-                  </SelectItem>
+                  </SelectItem> */}
                 </SelectGroup>
               </SelectContent>
             </Select>
